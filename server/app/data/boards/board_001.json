@@ -1,0 +1,158 @@
+{
+  "meta": {
+    "rows": 6,
+    "cols": 6,
+    "palette": [
+      "a",
+      "b",
+      "c"
+    ],
+    "rules": [
+      "neighbor",
+      "knight"
+    ],
+    "difficulty": "hard",
+    "seed": 42
+  },
+  "colors": [
+    [
+      "a",
+      "b",
+      "c",
+      "a",
+      "b",
+      "c"
+    ],
+    [
+      "b",
+      "c",
+      "a",
+      "b",
+      "c",
+      "a"
+    ],
+    [
+      "c",
+      "a",
+      "b",
+      "c",
+      "a",
+      "b"
+    ],
+    [
+      "a",
+      "b",
+      "c",
+      "a",
+      "b",
+      "c"
+    ],
+    [
+      "b",
+      "c",
+      "a",
+      "b",
+      "c",
+      "a"
+    ],
+    [
+      "c",
+      "a",
+      "b",
+      "c",
+      "a",
+      "b"
+    ]
+  ],
+  "clues": [
+    [
+      {
+        "rule": "neighbor",
+        "value": 3
+      },
+      null,
+      null,
+      {
+        "rule": "knight",
+        "value": 2
+      },
+      null,
+      null
+    ],
+    [
+      null,
+      null,
+      {
+        "rule": "neighbor",
+        "value": 2
+      },
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      {
+        "rule": "knight",
+        "value": 3
+      },
+      null,
+      null,
+      {
+        "rule": "neighbor",
+        "value": 1
+      },
+      null
+    ],
+    [
+      null,
+      null,
+      null,
+      null,
+      null,
+      {
+        "rule": "neighbor",
+        "value": 2
+      }
+    ],
+    [
+      null,
+      null,
+      {
+        "rule": "neighbor",
+        "value": 1
+      },
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      {
+        "rule": "neighbor",
+        "value": 2
+      },
+      null,
+      null,
+      {
+        "rule": "knight",
+        "value": 2
+      },
+      null
+    ]
+  ],
+  "initial": [
+    [
+      0,
+      0
+    ],
+    [
+      2,
+      1
+    ],
+    [
+      3,
+      5
+    ]
+  ]
+}

@@ -1,0 +1,16 @@
+// In your existing `frontend/eslint.config.js` Vue block, ensure this rule exists:
+rules: {
+  // keep any existing rules you have...
+  'vue/max-attributes-per-line': ['error', {
+    singleline: 1,
+    multiline: 1
+  }],
+  'vue/first-attribute-linebreak': ['error', {
+    singleline: 'beside',
+    multiline: 'below'
+  }],
+  'vue/html-closing-bracket-newline': ['error', {
+    singleline: 'never',
+    multiline: 'always'
+  }]
+}
