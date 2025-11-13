@@ -5,12 +5,20 @@
   const g = useGameController()
   const count = computed(() => g.rows.value * g.cols.value)
   const indices = computed(() => Array.from({ length: count.value }, (_, i) => i))
+  const boardStyle = computed(() => {
+    const active = g.activeColor.value
+    const borderColor = active ? g.hexFor(active) : 'transparent'
+    return {
+      gridTemplateColumns: `repeat(${g.cols.value}, 64px)`,
+      border: `6px solid ${borderColor}`
+    }
+  })
 </script>
 
 <template>
   <div
     class="board"
-    :style="{ gridTemplateColumns: `repeat(${g.cols.value}, 64px)` }"
+    :style="boardStyle"
   >
     <Cell
       v-for="i in indices"
@@ -26,5 +34,8 @@
     display: grid;
     gap: 4px;
     padding: 16px;
+    border-radius: 12px;
+    box-sizing: border-box;
+    transition: border-color 150ms ease;
   }
 </style>
