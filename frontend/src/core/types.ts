@@ -50,7 +50,7 @@ export interface CellState {
   /** True if this cell has been solved by the player (or was revealed). */
   solved?: boolean
   /** User & system per-color marks. 'E' is system error and cannot be removed. */
-  marks?: Record<ColorKey, Mark>
+  marks?: Partial<Record<ColorKey, Mark>>
   /** Was part of initial reveal. */
   revealed?: boolean
   /** Transient wrong indicator for UI feedback. */
