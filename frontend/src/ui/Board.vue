@@ -10,7 +10,7 @@
 <template>
   <div
     class="board"
-    :style="{ gridTemplateColumns: `repeat(${g.cols.value}, 1fr)` }"
+    :style="{ gridTemplateColumns: `repeat(${g.cols.value}, 64px)` }"
   >
     <Cell
       v-for="i in indices"
