@@ -5,12 +5,19 @@
   const g = useGameController()
   const count = computed(() => g.rows.value * g.cols.value)
   const indices = computed(() => Array.from({ length: count.value }, (_, i) => i))
+
+  const rows = g.rows.value
+  const cols = g.cols.value
 </script>
 
 <template>
   <div
     class="board"
-    :style="{ gridTemplateColumns: `repeat(${g.cols.value}, 64px)` }"
+    :style="{
+      '--rows': rows,
+      '--cols': cols,
+      '--cell-size': '64px',
+    }"
   >
     <Cell
       v-for="i in indices"
@@ -24,7 +31,8 @@
 <style scoped>
   .board {
     display: grid;
-    gap: 4px;
-    padding: 16px;
+    grid-template-columns: repeat(var(--cols), var(--cell-size));
+    grid-template-rows: repeat(var(--rows), var(--cell-size));
+    gap: 6px;
   }
 </style>

@@ -1,13 +1,41 @@
 :root {
   --gap: 8px;
-  --unsolved: #c9c9c9;
+  --unsolved: #e7e7e7;
   --stroke: #555;
 }
-body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
-.cell { width: 64px; height: 64px; user-select: none; }
-.wh { width: 100%; height: 100%; }
-.cell-rect { stroke: var(--stroke); }
-.palette { display: flex; gap: var(--gap); align-items: center; }
-.palette button { width: 32px; height: 32px; border-radius: 6px; border: 1px solid #444; cursor: pointer; }
-.toolbar { display: flex; gap: var(--gap); }
-:focus-visible { outline: 2px solid #000; outline-offset: 2px; }
+
+body {
+  margin: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    sans-serif;
+}
+
+.wh {
+  width: 100%;
+  height: 100%;
+}
+
+.palette {
+  display: flex;
+  gap: var(--gap);
+  align-items: center;
+}
+.palette button {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid #444;
+  cursor: pointer;
+}
+.toolbar {
+  display: flex;
+  gap: var(--gap);
+}
+:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}
