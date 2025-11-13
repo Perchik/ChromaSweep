@@ -3,9 +3,12 @@ import type { BoardFile, CellState, ColorKey, Mark } from './types'
 import type { PaletteKey, ColorStyle } from './types'
 import { getStyle } from './palettes'
 
+type Tool = 'fill' | 'mark-x' | 'mark-o'
+
 const boardRef = ref<BoardFile | null>(null)
 const gridRef = ref<CellState[][]>([])
 const activeColorRef = ref<ColorKey | null>(null)
+const activeToolRef = ref<Tool>('fill')
 const strikesRef = ref(0)
 const wonRef = ref(false)
 const themeRef = ref<PaletteKey>('default')
@@ -30,11 +33,14 @@ export function useGameController() {
     boardRef.value = bf
     gridRef.value = grid
     activeColorRef.value = bf.meta.palette[0] ?? null
+    activeToolRef.value = 'fill'
     strikesRef.value = 0
     wonRef.value = isBoardSolved()
   }
 
   function setTheme(name: PaletteKey) { themeRef.value = name }
+
+  function setActiveTool(tool: Tool) { activeToolRef.value = tool }
 
   function styleFor(key: ColorKey): ColorStyle {
     return getStyle(themeRef.value, key)
@@ -53,6 +59,19 @@ export function useGameController() {
     else if (prev === 'X') next = 'O'
     else if (prev === 'O') next = null
     else next = prev
+    const marks = { ...(cell.marks ?? {}) }
+    marks[color] = next
+    gridRef.value[r][c] = { ...cell, marks }
+  }
+
+  /** Apply or clear the provided mark for the active color without cycling. */
+  function setActiveColorMark(r: number, c: number, mark: Exclude<Mark, 'E' | null>) {
+    const color = activeColorRef.value
+    if (!color) return
+    const cell = gridRef.value[r][c]
+    const current = (cell.marks ?? {})[color] ?? null
+    if (current === 'E') return
+    const next: Mark = current === mark ? null : mark
     const marks = { ...(cell.marks ?? {}) }
     marks[color] = next
     gridRef.value[r][c] = { ...cell, marks }
@@ -114,6 +133,7 @@ export function useGameController() {
     board: boardRef,
     grid: gridRef,
     activeColor: activeColorRef,
+    activeTool: activeToolRef,
     strikes: strikesRef,
     won: wonRef,
     theme: themeRef,
@@ -121,6 +141,8 @@ export function useGameController() {
     rows, cols,
     loadBoard, resetProgress,
     setTheme, styleFor, hexFor,
-    fillCell, toggleMark
+    setActiveTool,
+    fillCell, toggleMark,
+    setActiveColorMark
   }
 }

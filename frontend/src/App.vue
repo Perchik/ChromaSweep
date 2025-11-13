@@ -2,6 +2,7 @@
   import Board from './ui/Board.vue'
   import Palette from './ui/Palette.vue'
   import Toolbar from './ui/Toolbar.vue'
+  import ToolSelector from './ui/ToolSelector.vue'
   import { onMounted, ref } from 'vue'
   import { useGameController } from './core/useGame'
   import { fetchBoard } from './core/api'
@@ -56,6 +57,7 @@
         <Toolbar />
       </section>
       <Board />
+      <ToolSelector />
     </template>
   </main>
 </template>
