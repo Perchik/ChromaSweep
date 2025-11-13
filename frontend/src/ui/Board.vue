@@ -10,13 +10,13 @@
 <template>
   <div
     class="board"
-    :style="{ gridTemplateColumns: `repeat(${g.cols}, 1fr)` }"
+    :style="{ gridTemplateColumns: `repeat(${g.cols.value}, 1fr)` }"
   >
     <Cell
       v-for="i in indices"
-      :key="`${Math.floor(i / g.cols)}-${i % g.cols}`"
-      :r="Math.floor(i / g.cols)"
-      :c="i % g.cols"
+      :key="`${Math.floor(i / g.cols.value)}-${i % g.cols.value}`"
+      :r="Math.floor(i / g.cols.value)"
+      :c="i % g.cols.value"
     />
   </div>
 </template>
@@ -24,7 +24,7 @@
 <style scoped>
   .board {
     display: grid;
-    gap: var(--gap);
+    gap: 4px;
     padding: 16px;
   }
 </style>

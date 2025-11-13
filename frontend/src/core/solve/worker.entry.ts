@@ -1,25 +1,23 @@
 /// <reference lib="webworker" />
 import { propagateAll } from './propagate'
-import type { BoardFile, Color } from '../types'
+import type { BoardFile, ColorKey } from '../types'
 import type { RuleContext } from '../rules'
 
 function buildContext(board: BoardFile, state: any): RuleContext {
   const meta = board.meta
-  const getGuess = (r: number, c: number): Color | null => state.grid?.[r]?.[c]?.guess ?? null
-  const setCertainColor = (r: number, c: number, color: Color) => {
-    // set a deterministic guess in-place to keep worker idempotent
-    state.grid[r][c] = { ...(state.grid[r][c] || {}), guess: color }
+  const getColor = (r: number, c: number): ColorKey | null => state.grid?.[r]?.[c]?.color ?? null
+  const setCertainColor = (r: number, c: number, color: ColorKey) => {
+    state.grid[r][c] = { ...(state.grid[r][c] || {}), color, solved: true }
   }
-  const eliminateColor = (r: number, c: number, color: Color) => {
-    // record an elimination by attaching/maintaining a marks map; this will be read by UI later
+  const eliminateColor = (r: number, c: number, color: ColorKey) => {
     const cell = state.grid[r][c] || {}
     const marks = { ...(cell.marks || {}) }
-    // mark 'X' against that color to indicate elimination
-    marks[color] = 'X'
+    // don't override system 'E' here; just set X if not already E
+    if (marks[color] !== 'E') marks[color] = 'X'
     state.grid[r][c] = { ...cell, marks }
   }
   const inBounds = (r: number, c: number) => r >= 0 && c >= 0 && r < meta.rows && c < meta.cols
-  return { meta, getGuess, setCertainColor, eliminateColor, inBounds }
+  return { meta, getColor, setCertainColor, eliminateColor, inBounds }
 }
 
 self.onmessage = (e: MessageEvent) => {

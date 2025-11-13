@@ -1,12 +1,11 @@
 /* eslint-disable no-unused-vars */
-import type { BoardFile, Color } from '../types'
+import type { BoardFile, ColorKey } from '../types'
 
 export interface RuleContext {
   meta: BoardFile['meta']
-  // we'll compute clues elsewhere, rule impls can read via ctx.meta + external accessors
-  getGuess(_r: number, _c: number): Color | null
-  setCertainColor(_r: number, _c: number, _color: Color): void
-  eliminateColor(_r: number, _c: number, _color: Color): void
+  getColor(_r: number, _c: number): ColorKey | null
+  setCertainColor(_r: number, _c: number, _color: ColorKey): void
+  eliminateColor(_r: number, _c: number, _color: ColorKey): void
   inBounds(_r: number, _c: number): boolean
 }
 

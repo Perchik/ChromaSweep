@@ -5,11 +5,16 @@
   const g = useGameController()
   const cell = computed(() => g.grid.value[props.r]?.[props.c])
   const clue = computed(() => (g as any).board.value?.clues[props.r][props.c] ?? null)
+
   const fill = computed(() => {
-    const guess = cell.value?.guess
-    if (!guess) return 'var(--unsolved)'
-    return g.resolveColor(guess)
+    const col = cell.value?.color
+    return col ? g.styleFor(col).main : 'var(--unsolved)'
   })
+  const textFill = computed(() => {
+    const col = cell.value?.color
+    return col ? g.styleFor(col).fg : '#000000'
+  })
+
   function onClick() {
     const col = g.activeColor.value
     if (col) g.fillCell(props.r, props.c, col)
@@ -19,6 +24,13 @@
       e.preventDefault()
       onClick()
     }
+  }
+
+  const CORNERS: Record<string, { x: number; y: number; anchor: string }> = {
+    a: { x: 12, y: 18, anchor: 'start' },
+    b: { x: 88, y: 18, anchor: 'end' },
+    c: { x: 12, y: 90, anchor: 'start' },
+    d: { x: 88, y: 90, anchor: 'end' },
   }
 </script>
 
@@ -51,19 +63,59 @@
         text-anchor="middle"
         font-size="42"
         font-weight="700"
+        :fill="textFill"
       >
-        {{ clue.rule === 'knight' ? '♞' : clue.value }}
+        {{ cell.solved ? (clue.rule === 'knight' ? '♞' : clue.value) : '' }}
       </text>
+
+      <!-- Corner marks (X/O/E) -->
+      <g v-if="g.board.value">
+        <template
+          v-for="k in g.board.value.meta.palette"
+          :key="k"
+        >
+          <template v-if="cell?.marks?.[k]">
+            <rect
+              v-if="cell.marks[k] === 'E'"
+              :x="CORNERS[k].anchor === 'start' ? CORNERS[k].x - 8 : CORNERS[k].x - 20"
+              :y="CORNERS[k].y - 14"
+              rx="3"
+              width="24"
+              height="18"
+              fill="#e03131"
+              opacity="0.95"
+            />
+            <text
+              :x="CORNERS[k].x"
+              :y="CORNERS[k].y"
+              :text-anchor="CORNERS[k].anchor"
+              font-size="14"
+              font-weight="800"
+              :fill="
+                cell.marks[k] === 'E'
+                  ? '#000000'
+                  : cell.marks[k] === 'X'
+                    ? '#cc0000'
+                    : g.styleFor(k).fg
+              "
+            >
+              {{ cell.marks[k] === 'O' ? 'O' : '×' }}
+            </text>
+          </template>
+        </template>
+      </g>
     </svg>
   </div>
 </template>
 
 <style scoped>
   .cell {
-    width: 64px;
-    height: 64px;
     user-select: none;
+    padding: 0;
+    margin: 0;
+    border: none; /* unless intentional */
   }
+
   .wh {
     width: 100%;
     height: 100%;

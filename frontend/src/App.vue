@@ -15,15 +15,7 @@
       const board = await fetchBoard()
       g.loadBoard(board)
     } catch (e: any) {
-      console.error('Failed to load board from API, falling back to local file...', e)
-      err.value = e?.message ?? String(e)
-      try {
-        const r = await fetch('/boards/board_001.json')
-        const json = await r.json()
-        g.loadBoard(json as any)
-      } catch (e2: any) {
-        err.value = `Fallback failed: ${e2?.message ?? e2}`
-      }
+      err.value = `Failed to load board: ${e?.message ?? e}`
     } finally {
       loading.value = false
     }
