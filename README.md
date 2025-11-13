@@ -1,41 +1,81 @@
-# 🎨 Color Mines — Web Scaffold (Vue + FastAPI)
+# 🎨 Color Mines
 
-This repo contains:
-- **frontend/**: Vue 3 + TypeScript (Vite). Renders board, palette, worker-based hints (scaffolded).
-- **server/**: FastAPI endpoints. `/api/board` serves a static board; `/api/hint` echoes back (stub).
+Color Mines is a multi-color logic puzzle inspired by Minesweeper and Obto.  
+Each puzzle is a grid of hidden colors (a/b/c/d). Clues describe how many
+same-color neighbors satisfy a rule (Neighbor, Knight, Row, etc.). The player
+deduces all colors using logic, marks, and validation.
 
-## Quick Start
+A Vue 3 + TypeScript app provides the interactive frontend, while a Python
+generator + solver (optional during development) creates and checks puzzles.
 
-### Backend
-```bash
-cd server
-python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
+---
+
+## 🚀 Features
+
+- Multiple rule types (Neighbor, Knight, extensible)
+- SVG-based board rendering
+- X/O/E marks, strike system, automatic validation
+- "Blink-to-remove-X" input UX
+- Vue 3 Composition API architecture
+- Web Worker rule propagation support
+- Planned: five-layer Simulation Mode
+- Planned: hint engine & daily puzzles
+
+---
+
+## 🏗 Project Structure
+
+```text
+frontend/
+  src/
+    core/
+      useGame.ts
+      api.ts
+      types.ts
+      palettes.ts
+      rules/
+      solve/
+    ui/
+      Board.vue
+      Cell.vue
+      Palette.vue
+      Toolbar.vue
+    App.vue
+    main.ts
+  public/
+    boards/
+      board_001.json
+backend/
+  generator/
+  solver/
+docs/
+  architecture.md
+  state-model.md
+  web-workers.md
+  data-format.md
+  simulation-mode.md
 ```
 
-### Frontend
-```bash
+---
+
+## 🛠 Running the Frontend
+
+```sh
 cd frontend
-npm i
+npm install
 npm run dev
 ```
 
-Optionally point the frontend at the backend:
-Create `frontend/.env.local`:
-```
-VITE_API_URL=http://localhost:8000
-```
+The app loads from `/public/boards/board_001.json` unless a Python API is enabled.
 
-The frontend falls back to `public/boards/board_001.json` if `VITE_API_URL` is not set.
+---
 
-## Structure
-```
-frontend/  # Vue app
-server/    # FastAPI app
-```
+## 🧠 Documentation
 
-## Notes
-- Boards use **symbolic colors** (`"a","b","c","d"`) and the UI maps them via `src/core/palettes.ts`.
-- The browser solver is conservative (deterministic propagation only; scaffolded).
-- Add deep hints in FastAPI later by implementing your Python solver.
+- [Architecture Overview](docs/architecture.md)
+- [State Model](docs/state-model.md)
+- [Web Worker Propagation](docs/web-workers.md)
+- [Board JSON Specification](docs/data-format.md)
+- [Simulation Mode Design](docs/simulation-mode.md)
+
+---
