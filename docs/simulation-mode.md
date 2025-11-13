@@ -144,7 +144,8 @@ Sim-layer marks are analogous to base marks, but visually distinguished:
   ```
 - Do not affect base marks; they are purely hypothetical annotations.
 
-Visual style: smaller, handwriting-like glyphs, perhaps with a pencil color, so they read as "sketchy" rather than final.
+Visual style: smaller, handwriting-like glyphs, perhaps with a pencil color, so they read as "sketchy" rather than final.  (✘ ?)
+
 
 ---
 
