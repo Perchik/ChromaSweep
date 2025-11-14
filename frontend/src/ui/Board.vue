@@ -2,28 +2,46 @@
   import { computed } from 'vue'
   import { useGameController } from '../core/useGame'
   import Cell from './Cell.vue'
-  const g = useGameController()
-  const count = computed(() => g.rows.value * g.cols.value)
-  const indices = computed(() => Array.from({ length: count.value }, (_, i) => i))
 
-  const rows = g.rows.value
-  const cols = g.cols.value
+  const g = useGameController()
+
+  const cells = computed(() => {
+    const rows = g.rows.value
+    const cols = g.cols.value
+    const total = rows * cols
+
+    return Array.from({ length: total }, (_, i) => ({
+      row: Math.floor(i / cols),
+      col: i % cols,
+    }))
+  })
+
+  const boardStyle = computed(() => {
+    const rows = g.rows.value
+    const cols = g.cols.value
+    const active = g.activeColor.value
+
+    return {
+      // grid size
+      gridTemplateColumns: `repeat(${cols}, 64px)`,
+      gridTemplateRows: `repeat(${rows}, 64px)`,
+
+      // dynamic border color
+      borderColor: active ? g.hexFor(active) : 'transparent',
+    }
+  })
 </script>
 
 <template>
   <div
     class="board"
-    :style="{
-      '--rows': rows,
-      '--cols': cols,
-      '--cell-size': '64px',
-    }"
+    :style="boardStyle"
   >
     <Cell
-      v-for="i in indices"
-      :key="`${Math.floor(i / g.cols.value)}-${i % g.cols.value}`"
-      :r="Math.floor(i / g.cols.value)"
-      :c="i % g.cols.value"
+      v-for="cell in cells"
+      :key="`${cell.row}-${cell.col}`"
+      :r="cell.row"
+      :c="cell.col"
     />
   </div>
 </template>
@@ -31,8 +49,11 @@
 <style scoped>
   .board {
     display: grid;
-    grid-template-columns: repeat(var(--cols), var(--cell-size));
-    grid-template-rows: repeat(var(--rows), var(--cell-size));
-    gap: 6px;
+    gap: 8px;
+    width: max-content;
+    padding: 40px;
+    border: 20px solid;
+    border-bottom-width: 60px;
+    border-radius: 16px;
   }
 </style>
