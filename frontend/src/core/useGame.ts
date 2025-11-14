@@ -18,7 +18,7 @@ export function useGameController() {
 
   function loadBoard(bf: BoardFile) {
     const grid: CellState[][] = Array.from({ length: bf.meta.rows }, () =>
-      Array.from({ length: bf.meta.cols }, () => ({ marks: {} } as CellState))
+      Array.from({ length: bf.meta.cols }, () => ({ marks: {} }) as CellState)
     )
     for (const [r, c] of bf.initial) {
       grid[r][c].revealed = true
@@ -34,7 +34,9 @@ export function useGameController() {
     wonRef.value = isBoardSolved()
   }
 
-  function setTheme(name: PaletteKey) { themeRef.value = name }
+  function setTheme(name: PaletteKey) {
+    themeRef.value = name
+  }
 
   function styleFor(key: ColorKey): ColorStyle {
     return getStyle(themeRef.value, key)
@@ -59,7 +61,7 @@ export function useGameController() {
   }
 
   /** Place a system error mark for an attempted wrong color. */
-  function setSystemError(r: number, c: number, colorTried: ColorKey) {
+  function setWrongGuess(r: number, c: number, colorTried: ColorKey) {
     const cell = gridRef.value[r][c]
     const marks = { ...(cell.marks ?? {}) }
     marks[colorTried] = 'E'
@@ -76,21 +78,17 @@ export function useGameController() {
     if (cell.solved) return
 
     if (color === trueColor) {
-      const marks = { ...(cell.marks ?? {}) }
-      // Clear contradictory user X on the chosen color
-      if (marks[color] === 'X') marks[color] = null
       gridRef.value[r][c] = {
         ...cell,
         color,
         solved: true,
         wrong: false,
-        marks
+        marks: {}, // clear marks on correct solve,
       }
       if (isBoardSolved()) wonRef.value = true
     } else {
       strikesRef.value = Math.min(MAX_STRIKES, strikesRef.value + 1)
-      setSystemError(r, c, color)
-      // keep color empty on wrong try
+      setWrongGuess(r, c, color) // keep color empty on wrong try
     }
   }
 
@@ -118,9 +116,14 @@ export function useGameController() {
     won: wonRef,
     theme: themeRef,
 
-    rows, cols,
-    loadBoard, resetProgress,
-    setTheme, styleFor, hexFor,
-    fillCell, toggleMark
+    rows,
+    cols,
+    loadBoard,
+    resetProgress,
+    setTheme,
+    styleFor,
+    hexFor,
+    fillCell,
+    toggleMark,
   }
 }
