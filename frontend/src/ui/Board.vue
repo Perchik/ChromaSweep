@@ -2,7 +2,8 @@
   import { computed } from 'vue'
   import { useGameController } from '../core/useGame'
   import Cell from './Cell.vue'
-
+  import ToolSelector from './ToolSelector.vue'
+  import Palette from './Palette.vue'
   const g = useGameController()
 
   const cells = computed(() => {
@@ -34,27 +35,47 @@
 
 <template>
   <div
-    class="board"
-    :style="boardStyle"
+    class="container"
+    :style="{ borderColor: boardStyle.borderColor }"
   >
-    <Cell
-      v-for="cell in cells"
-      :key="`${cell.row}-${cell.col}`"
-      :r="cell.row"
-      :c="cell.col"
-    />
+    <div
+      class="board"
+      :style="boardStyle"
+    >
+      <Cell
+        v-for="cell in cells"
+        :key="`${cell.row}-${cell.col}`"
+        :r="cell.row"
+        :c="cell.col"
+      />
+    </div>
+
+    <ToolSelector />
+    <Palette />
   </div>
 </template>
 
 <style scoped>
-  .board {
-    display: grid;
-    gap: 8px;
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     width: max-content;
+    gap: 20px;
     padding: 40px;
     border: 20px solid;
     border-bottom-width: 60px;
     border-radius: 16px;
     transition: border-color 0.3s ease;
+  }
+
+  .board {
+    display: grid;
+    gap: 8px;
+    width: max-content; /* keep the grid tight */
+  }
+
+  .tool-overlay {
+    margin-top: 16px;
   }
 </style>
