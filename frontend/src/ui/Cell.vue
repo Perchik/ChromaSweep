@@ -17,8 +17,15 @@
   })
 
   function onClick() {
+    const tool = g.activeTool.value
     const col = g.activeColor.value
-    if (col) g.fillCell(props.r, props.c, col)
+    if (tool === 'fill') {
+      if (col) g.fillCell(props.r, props.c, col)
+    } else if (tool === 'mark-x') {
+      g.setActiveColorMark(props.r, props.c, 'X')
+    } else if (tool === 'mark-o') {
+      g.setActiveColorMark(props.r, props.c, 'O')
+    }
   }
   function onKey(e: KeyboardEvent) {
     if (e.key === 'Enter' || e.key === ' ') {
