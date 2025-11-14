@@ -55,5 +55,6 @@
     border: 20px solid;
     border-bottom-width: 60px;
     border-radius: 16px;
+    transition: border-color 0.3s ease;
   }
 </style>

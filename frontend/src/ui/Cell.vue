@@ -83,6 +83,10 @@
   }
 
   function onClick() {
+    if (cell.value?.solved) {
+      g.activeColor.value = cell.value.color as ColorKey
+      return
+    }
     const col = g.activeColor.value
     if (col) g.fillCell(props.r, props.c, col)
   }
