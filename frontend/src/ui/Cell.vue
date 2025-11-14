@@ -83,12 +83,7 @@
   }
 
   function onClick() {
-    if (cell.value?.solved) {
-      g.activeColor.value = cell.value.color as ColorKey
-      return
-    }
-    const col = g.activeColor.value
-    if (col) g.fillCell(props.r, props.c, col)
+    g.clickCell(props.r, props.c)
   }
 
   function onKey(e: KeyboardEvent) {
@@ -100,8 +95,8 @@
 
   function onContextMenu(e: MouseEvent) {
     e.preventDefault()
-    const col = g.activeColor.value
-    if (col) g.toggleMark(props.r, props.c, col)
+    const color = g.activeColor.value
+    if (color) g.cycleMark(props.r, props.c, color)
   }
 </script>
 

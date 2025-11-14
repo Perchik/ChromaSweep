@@ -53,6 +53,6 @@ export interface CellState {
   marks?: Partial<Record<ColorKey, Mark>>
   /** Was part of initial reveal. */
   revealed?: boolean
-  /** Transient wrong indicator for UI feedback. */
-  wrong?: boolean
 }
+
+export type Tool = 'fill' | 'mark-x' | 'mark-o' | 'reveal'
