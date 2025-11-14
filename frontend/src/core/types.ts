@@ -56,3 +56,16 @@ export interface CellState {
 }
 
 export type Tool = 'fill' | 'mark-x' | 'mark-o' | 'reveal'
+
+export interface ToolOption {
+  tool: Tool
+  icon: string
+  label: string
+}
+
+export const TOOL_OPTIONS: ToolOption[] = [
+  { tool: 'fill', icon: '⏹', label: 'Fill' },
+  { tool: 'mark-x', icon: '✖', label: 'Mark X' },
+  { tool: 'mark-o', icon: '⬤', label: 'Mark O' },
+  { tool: 'reveal', icon: '⯌', label: 'Reveal' },
+]

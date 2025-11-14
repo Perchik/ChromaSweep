@@ -22,10 +22,8 @@
       :aria-pressed="isActive(c)"
       :title="`Color ${c}`"
       @click="set(c)"
-    >
-      {{ c.toUpperCase() }}
-    </button>
-
+    />
+    <!-- 
     <select
       v-model="g.theme"
       title="Theme"
@@ -33,7 +31,7 @@
       <option value="default">Default</option>
       <option value="sunset">Sunset</option>
       <option value="mono">Mono</option>
-    </select>
+    </select> -->
   </div>
 </template>
 
@@ -44,11 +42,14 @@
     align-items: center;
   }
   .palette button {
-    min-width: 36px;
+    width: 32px;
     height: 32px;
-    border-radius: 6px;
+    border-radius: 100%;
     border: 1px solid #444;
     cursor: pointer;
     font-weight: 600;
+  }
+  .palette button:hover {
+    border: 2px solid #222;
   }
 </style>

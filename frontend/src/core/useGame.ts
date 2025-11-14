@@ -134,7 +134,7 @@ export function useGameController() {
         toggleMark(r, c, color, 'O')
         break
       case 'reveal':
-        // Reveal tool not implemented yet
+        revealCell(r, c)
         break
     }
   }
