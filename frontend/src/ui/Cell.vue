@@ -85,6 +85,10 @@
   function onClick() {
     g.clickCell(props.r, props.c)
   }
+  
+  function onDoubleClick() {
+    g.doubleClickCell(props.r, props.c)
+  }
 
   function onKey(e: KeyboardEvent) {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -108,6 +112,7 @@
     :aria-label="`Cell ${props.r},${props.c}`"
     @keydown="onKey"
     @click="onClick"
+    @dblclick="onDoubleClick"
     @contextmenu="onContextMenu"
   >
     <div

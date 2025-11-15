@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import type { BoardFile, CellState, ColorKey, Mark, Tool } from './types'
 import type { PaletteKey, ColorStyle } from './types'
 import { getStyle } from './palettes'
+import { neighbors8 } from './utils'
 
 const boardRef = ref<BoardFile | null>(null)
 const gridRef = ref<CellState[][]>([])
@@ -139,6 +140,22 @@ export function useGameController() {
     }
   }
 
+  function markEmptyNeighbors(r: number, c: number, color: ColorKey) {
+    neighbors8(r, c, boardRef.value!.meta.rows, boardRef.value!.meta.cols).forEach(([rr, cc]) => {
+      if (!gridRef.value[rr][cc]?.solved) {
+        toggleMark(rr, cc, color, 'X')
+      }
+    })
+  }
+
+  function doubleClickCell(r: number, c: number) {
+    if (!gridRef.value[r][c]?.solved) {
+      return
+    }
+    const color = gridRef.value[r][c].color as ColorKey
+    markEmptyNeighbors(r, c, color)
+  }
+
   function isBoardSolved(): boolean {
     if (!boardRef.value) return false
     for (let r = 0; r < boardRef.value.meta.rows; r++) {
@@ -174,5 +191,6 @@ export function useGameController() {
     cycleMark,
     setActiveTool,
     clickCell,
+    doubleClickCell,
   }
 }

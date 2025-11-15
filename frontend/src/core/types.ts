@@ -1,5 +1,6 @@
-export type ColorKey = 'a' | 'b' | 'c' | 'd'
 export type RuleName = 'neighbor' | 'knight'
+
+export type ColorKey = 'a' | 'b' | 'c' | 'd'
 
 export interface ColorStyle {
   key: ColorKey
