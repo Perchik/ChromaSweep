@@ -2,13 +2,21 @@
   import Board from './ui/Board.vue'
   import Palette from './ui/Palette.vue'
   import Toolbar from './ui/Toolbar.vue'
-  import { onMounted, ref } from 'vue'
+  import ToolSelector from './ui/ToolSelector.vue'
+  import { computed, onMounted, ref } from 'vue'
   import { useGameController } from './core/useGame'
   import { fetchBoard } from './core/api'
 
   const g = useGameController()
   const loading = ref(true)
   const err = ref<string | null>(null)
+
+  const frameStyle = computed(() => {
+    const active = g.activeColor.value
+    return {
+      borderColor: active ? g.hexFor(active) : 'transparent',
+    }
+  })
 
   onMounted(async () => {
     try {
@@ -46,9 +54,22 @@
       </p>
     </section>
 
-    <template v-else>
-      <Board />
-    </template>
+    <section
+      v-else
+      class="workspace"
+    >
+      <Toolbar class="toolbar" />
+      <div
+        class="board-frame"
+        :style="frameStyle"
+      >
+        <Board />
+        <div class="toolset">
+          <ToolSelector />
+          <Palette />
+        </div>
+      </div>
+    </section>
   </main>
 </template>
 
@@ -57,12 +78,39 @@
     max-width: 960px;
     margin: 0 auto;
     padding: 16px;
-  }
-  .controls {
     display: flex;
-    gap: 16px;
+    flex-direction: column;
     align-items: center;
-    margin-bottom: 12px;
+  }
+  .workspace {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+  .toolbar {
+    align-self: stretch;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+  .board-frame {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: max-content;
+    gap: 20px;
+    padding: 40px;
+    border: 20px solid;
+    border-bottom-width: 60px;
+    border-radius: 16px;
+    transition: border-color 0.3s ease;
+  }
+  .toolset {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
   }
   .loading,
   .error {
