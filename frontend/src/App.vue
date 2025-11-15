@@ -24,10 +24,6 @@
 
 <template>
   <main class="container">
-    <header>
-      <h1>Color Mines (Vue)</h1>
-    </header>
-
     <section
       v-if="loading"
       class="loading"
@@ -51,10 +47,6 @@
     </section>
 
     <template v-else>
-      <section class="controls">
-        <Palette />
-        <Toolbar />
-      </section>
       <Board />
     </template>
   </main>
