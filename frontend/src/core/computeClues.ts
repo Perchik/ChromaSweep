@@ -8,6 +8,16 @@ const ALL_COLOR_KEYS: ColorKey[] = ['a', 'b', 'c', 'd']
 const countMatches = (colors: ColorKey[][], coords: number[][], color: ColorKey) =>
   coords.reduce((count, [rr, cc]) => count + (colors[rr][cc] === color ? 1 : 0), 0)
 
+const allBoardCells = (meta: BoardFile['meta']): number[][] => {
+  const coords: number[][] = []
+  for (let r = 0; r < meta.rows; r++) {
+    for (let c = 0; c < meta.cols; c++) {
+      coords.push([r, c])
+    }
+  }
+  return coords
+}
+
 const tallyBoardColors = (_meta: BoardFile['meta'], colors: ColorKey[][]) => {
   const counts: Record<ColorKey, number> = Object.fromEntries(
     ALL_COLOR_KEYS.map((key) => [key, 0])
@@ -41,27 +51,32 @@ function createClue(
       ...base,
       category: definition.category,
       value: same,
-      payload: { color, affectedCells: coords },
+      affectedCells: coords,
+      payload: { color },
     }
   }
 
   if (definition.category === 'line') {
     const lines = definition.getLines(board.meta, r, c)
     const lineMatches = lines.map((line) => countMatches(colors, line, color))
+    const affectedCells = lines.flat()
     return {
       ...base,
       category: definition.category,
       value: lineMatches.reduce((sum, next) => sum + next, 0),
+      affectedCells,
       payload: { color, lines, lineMatches },
     }
   }
 
   if (!cache.has(rule)) {
     const value = definition.evaluateBoard(board.meta, colors)
+    const affectedCells = allBoardCells(board.meta)
     cache.set(rule, {
       ...base,
       category: definition.category,
       value,
+      affectedCells,
       payload: {
         counts: tallyBoardColors(board.meta, colors),
       },

@@ -19,7 +19,7 @@ export interface Meta {
   rows: number
   cols: number
   palette: ColorKey[]
-  rules: string[]
+  rules: RuleName[]
   defaultRule: RuleName
   difficulty: string
   smooth?: number
@@ -39,13 +39,14 @@ interface BaseClue {
   rule: RuleName
   category: RuleCategory
   value: number
+  /** All cells that this clue constrains. */
+  affectedCells: number[][]
 }
 
 export interface CellClue extends BaseClue {
   category: 'cell'
   payload: {
     color: ColorKey
-    affectedCells: number[][]
   }
 }
 

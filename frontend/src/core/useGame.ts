@@ -2,7 +2,6 @@ import { ref, computed } from 'vue'
 import type { BoardWithClues, CellState, ColorKey, Mark, Tool } from './types'
 import type { PaletteKey, ColorStyle } from './types'
 import { getStyle } from './palettes'
-import { neighbors8 } from './utils'
 
 const boardRef = ref<BoardWithClues | null>(null)
 const gridRef = ref<CellState[][]>([])
@@ -140,20 +139,25 @@ export function useGameController() {
     }
   }
 
-  function markEmptyNeighbors(r: number, c: number, color: ColorKey) {
-    neighbors8(r, c, boardRef.value!.meta.rows, boardRef.value!.meta.cols).forEach(([rr, cc]) => {
-      if (!gridRef.value[rr][cc]?.solved) {
-        toggleMark(rr, cc, color, 'X')
-      }
-    })
-  }
-
   function doubleClickCell(r: number, c: number) {
-    if (!gridRef.value[r][c]?.solved) {
+    const board = boardRef.value
+    const cell = gridRef.value[r]?.[c]
+    if (!board || !cell?.revealed || !cell.solved || !cell.color) {
       return
     }
-    const color = gridRef.value[r][c].color as ColorKey
-    markEmptyNeighbors(r, c, color)
+
+    const clue = board.clues?.[r]?.[c] ?? null
+    const affected = clue?.affectedCells ?? []
+    if (!affected.length) return
+
+    const color = cell.color as ColorKey
+    affected.forEach(([rr, cc]) => {
+      const neighbor = gridRef.value[rr]?.[cc]
+      if (!neighbor || neighbor.solved) return
+      const currentMark = neighbor.marks?.[color] ?? null
+      if (currentMark === 'X') return
+      toggleMark(rr, cc, color, 'X')
+    })
   }
 
   function isBoardSolved(): boolean {
