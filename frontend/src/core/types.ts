@@ -19,7 +19,7 @@ export interface Meta {
   rows: number
   cols: number
   palette: ColorKey[]
-  rules: string[]
+  rules: RuleName[]
   defaultRule: RuleName
   difficulty: string
   smooth?: number
