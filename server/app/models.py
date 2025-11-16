@@ -4,7 +4,7 @@ from typing import List, Literal, Optional, Tuple
 ColorKey = Literal['a','b','c','d']
 RuleName = Literal['neighbor','knight']
 
-class RuleOverride(BaseModel):
+class RuleCell(BaseModel):
     r: int
     c: int
     rule: RuleName
@@ -14,7 +14,6 @@ class Meta(BaseModel):
     cols: int
     palette: List[ColorKey]
     rules: List[str]
-    defaultRule: RuleName
     difficulty: str
     smooth: Optional[float] = None
     seed: Optional[int] = None
@@ -26,5 +25,5 @@ class Meta(BaseModel):
 class BoardFile(BaseModel):
     meta: Meta
     colors: List[List[ColorKey]]
-    ruleOverrides: Optional[List[RuleOverride]] = None
+    clueCells: Optional[List[RuleCell]] = None
     initial: List[Tuple[int,int]]

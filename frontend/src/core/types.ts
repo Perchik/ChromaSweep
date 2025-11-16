@@ -1,6 +1,12 @@
 export type ColorKey = 'a' | 'b' | 'c' | 'd'
 export type RuleName = 'neighbor' | 'knight'
 
+export interface RuleCell {
+  r: number
+  c: number
+  rule: RuleName
+}
+
 export interface ColorStyle {
   key: ColorKey
   main: string
@@ -15,7 +21,6 @@ export interface Meta {
   cols: number
   palette: ColorKey[]
   rules: string[]
-  defaultRule: RuleName
   difficulty: string
   smooth?: number
   seed?: number | null
@@ -25,20 +30,17 @@ export interface Meta {
   colors_sha1_12?: string
 }
 
-export interface RuleOverride {
-  r: number
-  c: number
-  rule: RuleName
-}
 export interface Clue {
   rule: RuleName
   value: number
 }
 
+export type ClueGrid = (Clue | null)[][]
+
 export interface BoardFile {
   meta: Meta
   colors: ColorKey[][]
-  ruleOverrides?: RuleOverride[]
+  clueCells?: RuleCell[]
   initial: [number, number][]
 }
 

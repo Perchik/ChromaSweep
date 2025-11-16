@@ -177,9 +177,16 @@ def generate(
         "colors_sha1_12": colors_hash,
     }
 
+    clue_cells = [
+        {"r": r, "c": c, "rule": "neighbor"}
+        for r in range(R)
+        for c in range(C)
+    ]
+
     return {
         "meta": meta,
         "colors": colors,
+        "clueCells": clue_cells,
         "clues": clues,
         "initial": [(r, c) for (r, c) in initial_min],
     }
