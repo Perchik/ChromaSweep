@@ -101,10 +101,10 @@ Clue values are **not** stored in JSON by default. Instead:
 Example clue model:
 
 ```ts
-interface Clue {
-  rule: RuleName      // 'neighbor', 'knight', ...
-  value: number       // neighbor count, etc.
-}
+type Clue =
+  | { rule: RuleName; category: 'cell'; value: number; payload: { affectedCells: number[][] } }
+  | { rule: RuleName; category: 'line'; value: number; payload: { lines: number[][][]; lineMatches: number[] } }
+  | { rule: RuleName; category: 'board'; value: number; payload: { counts: Record<ColorKey, number> } }
 ```
 
 Some future variants may store explicit `clues` to support custom rule types or mixed-rule puzzles.

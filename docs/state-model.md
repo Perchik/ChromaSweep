@@ -121,13 +121,13 @@ mirroring the size of `colors`.
 
 ## 4. Clue Model
 
-A clue is:
+A clue is a union with per-scope metadata:
 
 ```ts
-export interface Clue {
-  rule: RuleName   // e.g., 'neighbor', 'knight'
-  value: number
-}
+type Clue =
+  | { rule: RuleName; category: 'cell'; value: number; payload: { affectedCells: number[][] } }
+  | { rule: RuleName; category: 'line'; value: number; payload: { lines: number[][][]; lineMatches: number[] } }
+  | { rule: RuleName; category: 'board'; value: number; payload: { counts: Record<ColorKey, number> } }
 ```
 
 The frontend constructs a `Clue[][]` grid based on `colors` and active rules in `meta.rules`.

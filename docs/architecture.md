@@ -118,13 +118,13 @@ Rules determine how a clue cell interprets its value, e.g.:
 - `knight` → chess knight moves (L-shaped hops)
 - Other custom rules (row/column, streaks, regions, etc.) are extensible.
 
-A clue is:
+A clue is a discriminated union so each scope carries its metadata:
 
 ```ts
-interface Clue {
-  rule: RuleName      // e.g., 'neighbor', 'knight'
-  value: number       // e.g., "5 same-color neighbors"
-}
+type Clue =
+  | { rule: RuleName; category: 'cell'; value: number; payload: { affectedCells: number[][] } }
+  | { rule: RuleName; category: 'line'; value: number; payload: { lines: number[][][]; lineMatches: number[] } }
+  | { rule: RuleName; category: 'board'; value: number; payload: { counts: Record<ColorKey, number> } }
 ```
 
 At load time:

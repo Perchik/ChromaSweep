@@ -34,10 +34,37 @@ export interface RuleOverride {
   c: number
   rule: RuleName
 }
-export interface Clue {
+interface BaseClue {
   rule: RuleName
+  category: RuleCategory
   value: number
 }
+
+export interface CellClue extends BaseClue {
+  category: 'cell'
+  payload: {
+    color: ColorKey
+    affectedCells: number[][]
+  }
+}
+
+export interface LineClue extends BaseClue {
+  category: 'line'
+  payload: {
+    color: ColorKey
+    lines: number[][][]
+    lineMatches: number[]
+  }
+}
+
+export interface BoardClue extends BaseClue {
+  category: 'board'
+  payload: {
+    counts: Record<ColorKey, number>
+  }
+}
+
+export type Clue = CellClue | LineClue | BoardClue
 
 export interface BoardFile {
   meta: Meta

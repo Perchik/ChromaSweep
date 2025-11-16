@@ -1,29 +1,92 @@
 import type { BoardFile, Clue, RuleName, ColorKey } from './types'
 import { ruleDefinitions } from './rules/catalog'
 
+type BoardWideCache = Map<RuleName, Clue>
+
+const ALL_COLOR_KEYS: ColorKey[] = ['a', 'b', 'c', 'd']
+
+const countMatches = (colors: ColorKey[][], coords: number[][], color: ColorKey) =>
+  coords.reduce((count, [rr, cc]) => count + (colors[rr][cc] === color ? 1 : 0), 0)
+
+const tallyBoardColors = (_meta: BoardFile['meta'], colors: ColorKey[][]) => {
+  const counts: Record<ColorKey, number> = Object.fromEntries(
+    ALL_COLOR_KEYS.map((key) => [key, 0])
+  ) as Record<ColorKey, number>
+  for (let r = 0; r < colors.length; r++) {
+    for (let c = 0; c < colors[r].length; c++) {
+      const color = colors[r][c]
+      counts[color] = (counts[color] ?? 0) + 1
+    }
+  }
+  return counts
+}
+
+function createClue(
+  board: BoardFile,
+  colors: ColorKey[][],
+  rule: RuleName,
+  r: number,
+  c: number,
+  cache: BoardWideCache
+): Clue {
+  const definition = ruleDefinitions[rule]
+  if (!definition) throw new Error(`Unknown rule definition for "${rule}"`)
+  const color = colors[r][c]
+  const base = { rule, value: 0 }
+
+  if (definition.category === 'cell') {
+    const coords = definition.getAffectedCells(board.meta, r, c)
+    const same = countMatches(colors, coords, color)
+    return {
+      ...base,
+      category: definition.category,
+      value: same,
+      payload: { color, affectedCells: coords },
+    }
+  }
+
+  if (definition.category === 'line') {
+    const lines = definition.getLines(board.meta, r, c)
+    const lineMatches = lines.map((line) => countMatches(colors, line, color))
+    return {
+      ...base,
+      category: definition.category,
+      value: lineMatches.reduce((sum, next) => sum + next, 0),
+      payload: { color, lines, lineMatches },
+    }
+  }
+
+  if (!cache.has(rule)) {
+    const value = definition.evaluateBoard(board.meta, colors)
+    cache.set(rule, {
+      ...base,
+      category: definition.category,
+      value,
+      payload: {
+        counts: tallyBoardColors(board.meta, colors),
+      },
+    })
+  }
+  return cache.get(rule) as Clue
+}
+
+const ruleAt = (board: BoardFile, r: number, c: number): RuleName => {
+  const ro = board.ruleOverrides?.find((x) => x.r === r && x.c === c)
+  return ro?.rule ?? board.meta.defaultRule
+}
+
 export function computeCluesFromColors(board: BoardFile): Clue[][] {
   const R = board.meta.rows
   const C = board.meta.cols
   const colors = board.colors as ColorKey[][]
-  const ruleAt = (r: number, c: number): RuleName => {
-    const ro = board.ruleOverrides?.find((x) => x.r === r && x.c === c)
-    return ro?.rule ?? board.meta.defaultRule
-  }
   const grid: Clue[][] = Array.from({ length: R }, () =>
     Array.from({ length: C }, () => null as any)
   )
+  const boardCache: BoardWideCache = new Map()
   for (let r = 0; r < R; r++) {
     for (let c = 0; c < C; c++) {
-      const my = colors[r][c]
-      const rule = ruleAt(r, c)
-      const definition = ruleDefinitions[rule]
-      if (!definition) {
-        throw new Error(`Unknown rule definition for "${rule}"`)
-      }
-      const coords = definition.getAffectedCells(board.meta, r, c)
-      let same = 0
-      for (const [rr, cc] of coords) if (colors[rr][cc] === my) same++
-      grid[r][c] = { rule, value: same }
+      const rule = ruleAt(board, r, c)
+      grid[r][c] = createClue(board, colors, rule, r, c, boardCache)
     }
   }
   return grid
