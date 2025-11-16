@@ -1,11 +1,11 @@
-import type { BoardFile, Clue } from './types'
+import type { BoardFile, ClueGrid } from './types'
 import { z } from 'zod'
 import { computeCluesFromColors } from './computeClues'
 const BASE = import.meta.env.VITE_API_URL ?? ''
 
 const ColorKey = z.enum(['a', 'b', 'c', 'd'])
 const RuleName = z.enum(['neighbor', 'knight'])
-const RuleOverride = z.object({ r: z.number().int(), c: z.number().int(), rule: RuleName })
+const RuleCell = z.object({ r: z.number().int(), c: z.number().int(), rule: RuleName })
 
 const BoardSchema = z.object({
   meta: z.object({
@@ -13,7 +13,6 @@ const BoardSchema = z.object({
     cols: z.number().int().positive(),
     palette: z.array(ColorKey).min(1),
     rules: z.array(z.string()),
-    defaultRule: RuleName,
     difficulty: z.string(),
     smooth: z.number().optional(),
     seed: z.number().nullable().optional(),
@@ -23,7 +22,7 @@ const BoardSchema = z.object({
     colors_sha1_12: z.string().optional(),
   }),
   colors: z.array(z.array(ColorKey)),
-  ruleOverrides: z.array(RuleOverride).optional(),
+  clueCells: z.array(RuleCell).optional(),
   initial: z.array(z.tuple([z.number().int(), z.number().int()])),
 })
 
@@ -34,7 +33,7 @@ async function fetchAndParse(url: string): Promise<BoardFile> {
   return BoardSchema.parse(json) as BoardFile
 }
 
-export async function fetchBoard(id?: string): Promise<BoardFile & { clues: Clue[][] }> {
+export async function fetchBoard(id?: string): Promise<BoardFile & { clues: ClueGrid }> {
   // Try API first if configured
   if (BASE) {
     try {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { computed } from 'vue'
   import { useGameController } from '../core/useGame'
-  import type { ColorKey, CellState, Clue, Mark } from '../core/types'
+  import type { ColorKey, CellState, Clue, ClueGrid, Mark } from '../core/types'
 
   const props = defineProps<{ r: number; c: number }>()
 
@@ -14,7 +14,7 @@
 
   // Clue for this cell, if any
   const clue = computed<Clue | null>(() => {
-    const board = g.board.value as { clues?: Clue[][] } | null
+    const board = g.board.value as { clues?: ClueGrid } | null
     const clues = board?.clues
     return clues?.[props.r]?.[props.c] ?? null
   })

@@ -64,6 +64,17 @@
       "b"
     ]
   ],
+  "clueCells": [
+    { "r": 0, "c": 0, "rule": "neighbor" },
+    { "r": 0, "c": 3, "rule": "knight" },
+    { "r": 1, "c": 2, "rule": "neighbor" },
+    { "r": 2, "c": 1, "rule": "knight" },
+    { "r": 2, "c": 4, "rule": "neighbor" },
+    { "r": 3, "c": 5, "rule": "neighbor" },
+    { "r": 4, "c": 2, "rule": "neighbor" },
+    { "r": 5, "c": 1, "rule": "neighbor" },
+    { "r": 5, "c": 4, "rule": "knight" }
+  ],
   "clues": [
     [
       {

@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import type { BoardFile, ColorKey } from '../types'
+import type { BoardFile, ColorKey, ClueGrid } from '../types'
 
 export interface RuleContext {
   meta: BoardFile['meta']
@@ -7,6 +7,7 @@ export interface RuleContext {
   setCertainColor(_r: number, _c: number, _color: ColorKey): void
   eliminateColor(_r: number, _c: number, _color: ColorKey): void
   inBounds(_r: number, _c: number): boolean
+  clues: ClueGrid
 }
 
 export interface RulePlugin {
