@@ -13,7 +13,7 @@ const BoardSchema = z.object({
     rows: z.number().int().positive(),
     cols: z.number().int().positive(),
     palette: z.array(ColorKey).min(1),
-    rules: z.array(z.string()),
+    rules: z.array(RuleName),
     defaultRule: RuleName,
     difficulty: z.string(),
     smooth: z.number().optional(),

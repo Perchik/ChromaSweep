@@ -15,7 +15,7 @@ class Meta(BaseModel):
     rows: int
     cols: int
     palette: List[ColorKey]
-    rules: List[str]
+    rules: List[RuleName]
     defaultRule: RuleName
     difficulty: str
     smooth: Optional[float] = None
