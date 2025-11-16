@@ -13,12 +13,12 @@ export interface RuleContext {
 }
 
 export interface RulePlugin {
-  name: string
+  name: RuleName
   propagate(_ctx: RuleContext, _r: number, _c: number): boolean
 }
 
-export const registry = new Map<string, RulePlugin>()
+export const registry = new Map<RuleName, RulePlugin>()
 export const register = (p: RulePlugin) => {
   registry.set(p.name, p)
 }
-export const getRule = (n: string) => registry.get(n)
+export const getRule = (n: RuleName) => registry.get(n)
