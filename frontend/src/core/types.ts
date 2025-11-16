@@ -7,6 +7,8 @@ export type PaletteKey = 'default' | 'sunset' | 'mono'
 
 export type { RuleName }
 
+export type ColorKey = 'a' | 'b' | 'c' | 'd'
+
 export interface ColorStyle {
   key: ColorKey
   main: string
@@ -57,6 +59,19 @@ export interface CellState {
   marks?: Partial<Record<ColorKey, Mark>>
   /** Was part of initial reveal. */
   revealed?: boolean
-  /** Transient wrong indicator for UI feedback. */
-  wrong?: boolean
 }
+
+export type Tool = 'fill' | 'mark-x' | 'mark-o' | 'reveal'
+
+export interface ToolOption {
+  tool: Tool
+  icon: string
+  label: string
+}
+
+export const TOOL_OPTIONS: ToolOption[] = [
+  { tool: 'fill', icon: '⏹', label: 'Fill' },
+  { tool: 'mark-x', icon: '✖', label: 'Mark X' },
+  { tool: 'mark-o', icon: '⬤', label: 'Mark O' },
+  { tool: 'reveal', icon: '⯌', label: 'Reveal' },
+]

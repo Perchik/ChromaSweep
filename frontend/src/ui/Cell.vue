@@ -1,24 +1,95 @@
 <script setup lang="ts">
   import { computed } from 'vue'
   import { useGameController } from '../core/useGame'
-  const props = defineProps<{ r: number; c: number }>()
-  const g = useGameController()
-  const cell = computed(() => g.grid.value[props.r]?.[props.c])
-  const clue = computed(() => (g as any).board.value?.clues[props.r][props.c] ?? null)
+  import type { ColorKey, CellState, Clue, Mark } from '../core/types'
 
+  const props = defineProps<{ r: number; c: number }>()
+
+  const g = useGameController()
+
+  // The underlying cell data for this (r, c)
+  const cell = computed<CellState | null>(() => {
+    return (g.grid.value[props.r]?.[props.c] as CellState | undefined) ?? null
+  })
+
+  // Clue for this cell, if any
+  const clue = computed<Clue | null>(() => {
+    const board = g.board.value as { clues?: Clue[][] } | null
+    const clues = board?.clues
+    return clues?.[props.r]?.[props.c] ?? null
+  })
+
+  // Palette order for quadrant badges
+  const palette = computed<ColorKey[]>(() => {
+    const board = g.board.value as { meta?: { palette?: ColorKey[] } } | null
+    return board?.meta?.palette ?? []
+  })
+
+  // Cell fill color (fallback to CSS var for unsolved)
   const fill = computed(() => {
-    const col = cell.value?.color
+    const col = cell.value?.color ?? null
     return col ? g.styleFor(col).main : 'var(--unsolved)'
   })
+
+  // Text color for clue
   const textFill = computed(() => {
-    const col = cell.value?.color
+    const col = cell.value?.color ?? null
     return col ? g.styleFor(col).fg : '#000000'
   })
 
-  function onClick() {
-    const col = g.activeColor.value
-    if (col) g.fillCell(props.r, props.c, col)
+  // Badge style per palette key
+  function badgeStyle(k: ColorKey) {
+    const c = cell.value
+    const mark: Mark | undefined = c?.marks?.[k]
+    const style = g.styleFor(k)
+
+    if (!c || c.solved || !mark) {
+      return {
+        backgroundColor: 'transparent',
+        color: style.main,
+      }
+    }
+
+    if (mark === 'E') {
+      // “E” = system/exact mark, solid badge
+      return {
+        backgroundColor: style.main,
+        color: style.fg,
+      }
+    }
+
+    // “O” / “X” = outline only, colored glyph
+    return {
+      backgroundColor: 'transparent',
+      color: style.main,
+    }
   }
+
+  // Badge glyph for a given mark
+  function badgeGlyph(k: ColorKey): string {
+    const c = cell.value
+    const mark: Mark | undefined = c?.marks?.[k]
+
+    if (!c || c.solved || !mark) {
+      // non-breaking space keeps layout stable
+      return '\u00A0'
+    }
+
+    if (mark === 'O') return '⬤'
+    if (mark === 'X') return '✕'
+    if (mark === 'E') return '✕'
+
+    return '\u00A0'
+  }
+
+  function onClick() {
+    g.clickCell(props.r, props.c)
+  }
+  
+  function onDoubleClick() {
+    g.doubleClickCell(props.r, props.c)
+  }
+
   function onKey(e: KeyboardEvent) {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
@@ -26,11 +97,10 @@
     }
   }
 
-  const CORNERS: Record<string, { x: number; y: number; anchor: string }> = {
-    a: { x: 12, y: 18, anchor: 'start' },
-    b: { x: 88, y: 18, anchor: 'end' },
-    c: { x: 12, y: 90, anchor: 'start' },
-    d: { x: 88, y: 90, anchor: 'end' },
+  function onContextMenu(e: MouseEvent) {
+    e.preventDefault()
+    const color = g.activeColor.value
+    if (color) g.cycleMark(props.r, props.c, color)
   }
 </script>
 
@@ -42,69 +112,43 @@
     :aria-label="`Cell ${props.r},${props.c}`"
     @keydown="onKey"
     @click="onClick"
+    @dblclick="onDoubleClick"
+    @contextmenu="onContextMenu"
   >
-    <svg
-      viewBox="0 0 100 100"
-      class="wh"
+    <div
+      class="cell-inner"
+      :class="{ unsolved: !cell?.solved }"
+      :style="{ backgroundColor: fill }"
     >
-      <rect
-        x="2"
-        y="2"
-        width="96"
-        height="96"
-        rx="8"
-        class="cell-rect"
-        :style="{ fill }"
-      />
-      <text
+      <!-- Clue, centered -->
+      <div
         v-if="clue"
-        x="50"
-        y="58"
-        text-anchor="middle"
-        font-size="42"
-        font-weight="700"
-        :fill="textFill"
+        class="clue"
+        :style="{ color: textFill }"
       >
-        {{ cell.solved ? (clue.rule === 'knight' ? '♞' : clue.value) : '' }}
-      </text>
+        {{ cell?.solved ? (clue.rule === 'knight' ? '♞' : clue.value) : '' }}
+      </div>
 
-      <!-- Corner marks (X/O/E) -->
-      <g v-if="g.board.value">
-        <template
-          v-for="k in g.board.value.meta.palette"
+      <!-- 2×2 quadrant grid for marks/badges -->
+      <div
+        v-if="palette.length"
+        class="corner-grid"
+      >
+        <div
+          v-for="k in palette"
           :key="k"
+          class="corner-slot"
         >
-          <template v-if="cell?.marks?.[k]">
-            <rect
-              v-if="cell.marks[k] === 'E'"
-              :x="CORNERS[k].anchor === 'start' ? CORNERS[k].x - 8 : CORNERS[k].x - 20"
-              :y="CORNERS[k].y - 14"
-              rx="3"
-              width="24"
-              height="18"
-              fill="#e03131"
-              opacity="0.95"
-            />
-            <text
-              :x="CORNERS[k].x"
-              :y="CORNERS[k].y"
-              :text-anchor="CORNERS[k].anchor"
-              font-size="14"
-              font-weight="800"
-              :fill="
-                cell.marks[k] === 'E'
-                  ? '#000000'
-                  : cell.marks[k] === 'X'
-                    ? '#cc0000'
-                    : g.styleFor(k).fg
-              "
-            >
-              {{ cell.marks[k] === 'O' ? 'O' : '×' }}
-            </text>
-          </template>
-        </template>
-      </g>
-    </svg>
+          <div
+            class="badge"
+            :class="{ 'badge--active': !cell?.solved && !!cell?.marks?.[k] }"
+            :style="badgeStyle(k)"
+          >
+            {{ badgeGlyph(k) }}
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -113,11 +157,83 @@
     user-select: none;
     padding: 0;
     margin: 0;
-    border: none; /* unless intentional */
-  }
-
-  .wh {
+    border: none;
     width: 100%;
     height: 100%;
+  }
+
+  .cell-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+    overflow: hidden;
+    box-sizing: border-box;
+    border: 0.5px solid rgba(0, 0, 0, 0.3);
+    transition:
+      background-color 180ms ease-out,
+      box-shadow 180ms ease-out;
+  }
+
+  .cell-inner.unsolved {
+    box-shadow: inset 0 4px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .clue {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.4rem;
+    font-weight: 700;
+  }
+
+  /* 2×2 grid overlay for quadrants */
+  .corner-grid {
+    position: absolute;
+    inset: 2px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: 3px;
+    pointer-events: none;
+  }
+
+  .corner-slot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .badge {
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-weight: 800;
+    font-size: 1.3rem;
+    line-height: 1;
+
+    opacity: 0;
+    transform: scale(0.7);
+    background-color: transparent;
+
+    transition:
+      opacity 100ms ease-out,
+      background-color 160ms ease-out,
+      color 160ms ease-out,
+      transform 80ms ease-out,
+      box-shadow 80ms ease-out;
+  }
+
+  .badge--active {
+    opacity: 1;
+    transform: scale(1);
   }
 </style>
