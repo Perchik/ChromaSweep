@@ -1,4 +1,11 @@
-export type RuleName = 'neighbor' | 'knight'
+import type { RuleName } from './rules/catalog'
+export type { RuleCategory } from './rules/catalog'
+
+export type ColorKey = 'a' | 'b' | 'c' | 'd'
+
+export type PaletteKey = 'default' | 'sunset' | 'mono'
+
+export type { RuleName }
 
 export type ColorKey = 'a' | 'b' | 'c' | 'd'
 
@@ -8,8 +15,6 @@ export interface ColorStyle {
   fg: string
   fgDisabled: string
 }
-
-export type PaletteKey = 'default' | 'sunset' | 'mono'
 
 export interface Meta {
   rows: number
