@@ -1,8 +1,11 @@
 /* eslint-disable no-unused-vars */
-import type { BoardFile, ColorKey } from '../types'
+import type { BoardFile, ColorKey, Clue, RuleName } from '../types'
 
 export interface RuleContext {
   meta: BoardFile['meta']
+  clues: Clue[][]
+  getClue(_r: number, _c: number): Clue | null
+  ruleAt(_r: number, _c: number): RuleName | null
   getColor(_r: number, _c: number): ColorKey | null
   setCertainColor(_r: number, _c: number, _color: ColorKey): void
   eliminateColor(_r: number, _c: number, _color: ColorKey): void

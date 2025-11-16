@@ -1,13 +1,12 @@
 import { defineStore } from 'pinia'
-import type { BoardFile, CellState, Color, ColorKey } from './types'
-import type { PaletteKey } from './palettes'
-import { getColor } from './palettes'
+import type { BoardWithClues, CellState, ColorKey, Mark, PaletteKey } from './types'
+import { getStyle } from './palettes'
 
 export const useGame = defineStore('game', {
   state: () => ({
-    board: null as BoardFile | null,
+    board: null as BoardWithClues | null,
     grid: [] as CellState[][],
-    activeColor: null as Color | null,
+    activeColor: null as ColorKey | null,
     strikes: 0,
     won: false,
     theme: 'default' as PaletteKey,
@@ -17,7 +16,7 @@ export const useGame = defineStore('game', {
     cols: (s) => s.board?.meta.cols ?? 0,
   },
   actions: {
-    loadBoard(bf: BoardFile) {
+    loadBoard(bf: BoardWithClues) {
       const grid = Array.from({ length: bf.meta.rows }, () =>
         Array.from({ length: bf.meta.cols }, () => ({ marks: {} }) as CellState)
       )
@@ -32,13 +31,13 @@ export const useGame = defineStore('game', {
       this.theme = name
     },
     resolveColor(key: string) {
-      return getColor(this.theme, key as ColorKey)
+      return getStyle(this.theme, key as ColorKey)
     },
-    fillCell(r: number, c: number, color: Color) {
+    fillCell(r: number, c: number, color: ColorKey) {
       const cell = this.grid[r][c]
-      this.grid[r][c] = { ...cell, guess: color }
+      this.grid[r][c] = { ...cell, color }
     },
-    setMark(r: number, c: number, color: Color, mark: 'X' | 'O' | null) {
+    setMark(r: number, c: number, color: ColorKey, mark: Mark) {
       const cell = this.grid[r][c]
       const marks = { ...(cell.marks ?? {}) }
       marks[color] = mark

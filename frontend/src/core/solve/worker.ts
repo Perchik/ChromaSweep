@@ -1,3 +1,5 @@
+import type { BoardWithClues } from '../types'
+
 let _worker: Worker | null = null
 
 function ensureWorker() {
@@ -7,7 +9,7 @@ function ensureWorker() {
   return _worker
 }
 
-export function runPropagate(board: any, state: any): Promise<any> {
+export function runPropagate(board: BoardWithClues, state: any): Promise<any> {
   const w = ensureWorker()
   return new Promise((resolve) => {
     const handler = (e: MessageEvent) => {
