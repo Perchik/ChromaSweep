@@ -3,6 +3,7 @@
   import Palette from './ui/Palette.vue'
   import Toolbar from './ui/Toolbar.vue'
   import ToolSelector from './ui/ToolSelector.vue'
+  import ClickEffects from './ui/ClickEffects.vue'
   import { computed, onMounted, ref } from 'vue'
   import { useGameController } from './core/useGame'
   import { fetchBoard } from './core/api'
@@ -58,6 +59,7 @@
       v-else
       class="workspace"
     >
+      <ClickEffects />
       <Toolbar class="toolbar" />
       <div
         class="board-frame"
