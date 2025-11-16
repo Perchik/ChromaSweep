@@ -37,6 +37,13 @@
     return col ? g.styleFor(col).fg : '#000000'
   })
 
+  const formattedClue = computed(() => {
+    if (!cell.value?.solved) return ''
+    const current = clue.value
+    if (current?.category !== 'cell') return ''
+    return current.rule === 'knight' ? '♞' : `${current.value}`
+  })
+
   // Badge style per palette key
   function badgeStyle(k: ColorKey) {
     const c = cell.value
@@ -122,11 +129,11 @@
     >
       <!-- Clue, centered -->
       <div
-        v-if="clue"
+        v-if="clue?.category === 'cell'"
         class="clue"
         :style="{ color: textFill }"
       >
-        {{ cell?.solved ? (clue.rule === 'knight' ? '♞' : clue.value) : '' }}
+        {{ formattedClue }}
       </div>
 
       <!-- 2×2 quadrant grid for marks/badges -->
