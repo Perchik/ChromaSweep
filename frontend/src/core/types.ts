@@ -1,5 +1,6 @@
 import type { RuleName } from './rules/catalog'
-export type { RuleCategory } from './rules/catalog'
+import type { RuleCategory } from './rules/types'
+export type { RuleCategory } from './rules/types'
 
 export type ColorKey = 'a' | 'b' | 'c' | 'd'
 

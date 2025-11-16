@@ -1,0 +1,26 @@
+[
+  {
+    "name": "neighbor",
+    "category": "cell",
+    "icon": "⬢",
+    "description": "Counts same-color neighbors in the surrounding 8 cells."
+  },
+  {
+    "name": "knight",
+    "category": "cell",
+    "icon": "♞",
+    "description": "Counts same-color cells a knight move away (chess knight)."
+  },
+  {
+    "name": "row",
+    "category": "line",
+    "icon": "↔",
+    "description": "Reports same-color counts along the clue’s row and column."
+  },
+  {
+    "name": "global-balance",
+    "category": "board",
+    "icon": "Σ",
+    "description": "Evaluates the difference between the most and least common colors."
+  }
+]
