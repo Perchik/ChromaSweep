@@ -1,4 +1,4 @@
-import type { BoardFile, Clue } from './types'
+import type { BoardFile, BoardWithClues, Clue } from './types'
 import { z } from 'zod'
 import { computeCluesFromColors } from './computeClues'
 import { ruleList } from './rules/catalog'
@@ -35,7 +35,7 @@ async function fetchAndParse(url: string): Promise<BoardFile> {
   return BoardSchema.parse(json) as BoardFile
 }
 
-export async function fetchBoard(id?: string): Promise<BoardFile & { clues: Clue[][] }> {
+export async function fetchBoard(id?: string): Promise<BoardWithClues> {
   // Try API first if configured
   if (BASE) {
     try {

@@ -19,7 +19,7 @@ The Web Worker provides a background deduction engine similar to Sudoku constrai
 
 ```ts
 worker.postMessage({
-  board,          // BoardFile
+  board,          // BoardWithClues (BoardFile + computed clues)
   state: { grid } // WorkerCell[][]
 })
 ```
@@ -66,6 +66,9 @@ The worker uses a `RuleContext` abstraction so that rules do not directly manipu
 ```ts
 export interface RuleContext {
   meta: BoardFile['meta']
+  clues: Clue[][]
+  getClue(r: number, c: number): Clue | null
+  ruleAt(r: number, c: number): RuleName | null
   getColor(r: number, c: number): ColorKey | null
   setCertainColor(r: number, c: number, color: ColorKey): void
   eliminateColor(r: number, c: number, color: ColorKey): void
@@ -75,6 +78,9 @@ export interface RuleContext {
 
 Helpers:
 
+- `clues` contains the immutable clue grid computed from the puzzle's colors.
+- `getClue` fetches the clue for `(r,c)` (or `null` if none).
+- `ruleAt` returns the rule governing `(r,c)` (respecting overrides).
 - `getColor` returns a cell's current color or `null` if unsolved.
 - `setCertainColor` sets a cell to a specific color and marks it solved.
 - `eliminateColor` marks a color as impossible for a cell (e.g., by setting an X).
@@ -89,11 +95,14 @@ In `worker.entry.ts`:
 ```ts
 /// <reference lib="webworker" />
 import { propagateAll } from './propagate'
-import type { BoardFile, ColorKey } from '../types'
+import type { BoardWithClues, ColorKey } from '../types'
 import type { RuleContext } from '../rules'
 
-function buildContext(board: BoardFile, state: any): RuleContext {
+function buildContext(board: BoardWithClues, state: any): RuleContext {
   const meta = board.meta
+  const clues = board.clues
+  const getClue = (r: number, c: number) => clues?.[r]?.[c] ?? null
+  const ruleAt = (r: number, c: number) => getClue(r, c)?.rule ?? null
 
   const getColor = (r: number, c: number): ColorKey | null =>
     state.grid?.[r]?.[c]?.color ?? null
@@ -112,11 +121,11 @@ function buildContext(board: BoardFile, state: any): RuleContext {
   const inBounds = (r: number, c: number) =>
     r >= 0 && c >= 0 && r < meta.rows && c < meta.cols
 
-  return { meta, getColor, setCertainColor, eliminateColor, inBounds }
+  return { meta, clues, getClue, ruleAt, getColor, setCertainColor, eliminateColor, inBounds }
 }
 
 self.onmessage = (e: MessageEvent) => {
-  const { board, state } = e.data as { board: BoardFile; state: any }
+  const { board, state } = e.data as { board: BoardWithClues; state: any }
   const ctx = buildContext(board, state)
   const changed = propagateAll(board, ctx)
   ;(self as any).postMessage({ changed, state })

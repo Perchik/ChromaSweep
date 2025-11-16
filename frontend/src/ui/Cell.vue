@@ -14,14 +14,14 @@
 
   // Clue for this cell, if any
   const clue = computed<Clue | null>(() => {
-    const board = g.board.value as { clues?: Clue[][] } | null
+    const board = g.board.value
     const clues = board?.clues
     return clues?.[props.r]?.[props.c] ?? null
   })
 
   // Palette order for quadrant badges
   const palette = computed<ColorKey[]>(() => {
-    const board = g.board.value as { meta?: { palette?: ColorKey[] } } | null
+    const board = g.board.value
     return board?.meta?.palette ?? []
   })
 

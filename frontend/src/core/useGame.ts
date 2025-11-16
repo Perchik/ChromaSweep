@@ -1,10 +1,10 @@
 import { ref, computed } from 'vue'
-import type { BoardFile, CellState, ColorKey, Mark, Tool } from './types'
+import type { BoardWithClues, CellState, ColorKey, Mark, Tool } from './types'
 import type { PaletteKey, ColorStyle } from './types'
 import { getStyle } from './palettes'
 import { neighbors8 } from './utils'
 
-const boardRef = ref<BoardFile | null>(null)
+const boardRef = ref<BoardWithClues | null>(null)
 const gridRef = ref<CellState[][]>([])
 const activeColorRef = ref<ColorKey | null>(null)
 const activeToolRef = ref<Tool>('fill')
@@ -18,7 +18,7 @@ export function useGameController() {
   const rows = computed(() => boardRef.value?.meta.rows ?? 0)
   const cols = computed(() => boardRef.value?.meta.cols ?? 0)
 
-  function loadBoard(bf: BoardFile) {
+  function loadBoard(bf: BoardWithClues) {
     const grid: CellState[][] = Array.from({ length: bf.meta.rows }, () =>
       Array.from({ length: bf.meta.cols }, () => ({ marks: {} }) as CellState)
     )

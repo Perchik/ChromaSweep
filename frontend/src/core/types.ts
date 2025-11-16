@@ -7,8 +7,6 @@ export type PaletteKey = 'default' | 'sunset' | 'mono'
 
 export type { RuleName }
 
-export type ColorKey = 'a' | 'b' | 'c' | 'd'
-
 export interface ColorStyle {
   key: ColorKey
   main: string
@@ -47,6 +45,8 @@ export interface BoardFile {
   ruleOverrides?: RuleOverride[]
   initial: [number, number][]
 }
+
+export type BoardWithClues = BoardFile & { clues: Clue[][] }
 
 export type Mark = 'X' | 'O' | 'E' | null
 
