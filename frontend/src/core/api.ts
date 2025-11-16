@@ -1,10 +1,11 @@
 import type { BoardFile, Clue } from './types'
 import { z } from 'zod'
 import { computeCluesFromColors } from './computeClues'
+import { ruleList } from './rules/catalog'
 const BASE = import.meta.env.VITE_API_URL ?? ''
 
 const ColorKey = z.enum(['a', 'b', 'c', 'd'])
-const RuleName = z.enum(['neighbor', 'knight'])
+const RuleName = z.enum(ruleList)
 const RuleOverride = z.object({ r: z.number().int(), c: z.number().int(), rule: RuleName })
 
 const BoardSchema = z.object({

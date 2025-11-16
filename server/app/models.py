@@ -1,8 +1,10 @@
 from pydantic import BaseModel
 from typing import List, Literal, Optional, Tuple
 
+from .rules import RULE_LIST
+
 ColorKey = Literal['a','b','c','d']
-RuleName = Literal['neighbor','knight']
+RuleName = Literal[tuple(RULE_LIST)]
 
 class RuleOverride(BaseModel):
     r: int
