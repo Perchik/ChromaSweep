@@ -1,6 +1,10 @@
 import type { ColorKey, Meta } from '../types'
-
-export type RuleCategory = 'cell' | 'line' | 'board'
+import type { RuleCategory } from './types'
+import {
+  ruleList,
+  sharedRuleMetadata,
+  type RuleName,
+} from './ruleArtifacts.gen'
 
 interface BaseRuleDefinition {
   name: string
@@ -87,42 +91,34 @@ const evaluateGlobalBalance = (meta: Meta, colors: ColorKey[][]) => {
   return Math.max(...values) - Math.min(...values)
 }
 
-export const ruleList = Object.freeze(
-  ['neighbor', 'knight', 'row', 'global-balance'] as const
-)
+type MetadataByRule = {
+  [K in RuleName]: Extract<(typeof sharedRuleMetadata)[number], { name: K }>
+}
 
-export type RuleName = (typeof ruleList)[number]
+const metadataByRule = Object.fromEntries(
+  sharedRuleMetadata.map((meta) => [meta.name, meta])
+) as MetadataByRule
 
 const definitions: Record<RuleName, RuleDefinition> = {
   neighbor: {
-    name: 'neighbor',
-    category: 'cell',
-    icon: '⬢',
-    description: 'Counts same-color neighbors in the surrounding 8 cells.',
+    ...metadataByRule.neighbor,
     getAffectedCells: neighbors8,
   },
   knight: {
-    name: 'knight',
-    category: 'cell',
-    icon: '♞',
-    description: 'Counts same-color cells a knight move away (chess knight).',
+    ...metadataByRule.knight,
     getAffectedCells: knightMoves,
   },
   row: {
-    name: 'row',
-    category: 'line',
-    icon: '↔',
-    description: 'Reports same-color counts along the clue’s row and column.',
+    ...metadataByRule.row,
     getLines: rowAndColumnLines,
   },
   'global-balance': {
-    name: 'global-balance',
-    category: 'board',
-    icon: 'Σ',
-    description:
-      'Evaluates the difference between the most and least common colors.',
+    ...metadataByRule['global-balance'],
     evaluateBoard: evaluateGlobalBalance,
   },
 }
 
 export const ruleDefinitions = definitions
+
+export { ruleList }
+export type { RuleName } from './ruleArtifacts.gen'

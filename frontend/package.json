@@ -4,10 +4,16 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "generate:rules": "node ../shared/scripts/generate-rule-artifacts.mjs",
+    "predev": "npm run generate:rules",
     "dev": "vite",
+    "prebuild": "npm run generate:rules",
     "build": "vite build",
+    "pretest": "npm run generate:rules",
     "preview": "vite preview",
+    "pretypecheck": "npm run generate:rules",
     "typecheck": "tsc --noEmit",
+    "prelint": "npm run generate:rules",
     "lint": "eslint --ext .ts,.vue src",
     "test": "vitest run"
   },
